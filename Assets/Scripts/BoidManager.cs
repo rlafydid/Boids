@@ -10,17 +10,27 @@ public class BoidManager : MonoBehaviour {
     public ComputeShader compute;
     Boid[] boids;
 
-    public Transform target;
+    public List<Transform> targets;
+
+    public bool dragTarget;
     
     void Start () {
         boids = FindObjectsOfType<Boid> ();
         foreach (Boid b in boids) {
-            b.Initialize (settings, target);
+            b.Initialize (settings, null);
         }
-
+        Queue<Transform> targetQueue = new(targets);
+        foreach (var group in ArmyGroupManager.Inst.groups)
+        {
+            group.target = targetQueue.Dequeue();
+        }
     }
 
     void Update () {
+        foreach (var group in ArmyGroupManager.Inst.groups)
+        {
+            group.Update();
+        }
         if (boids != null) {
 
             int numBoids = boids.Length;
@@ -49,8 +59,9 @@ public class BoidManager : MonoBehaviour {
                 boids[i].centreOfFlockmates = boidData[i].flockCentre;
                 boids[i].avgAvoidanceHeading = boidData[i].avoidanceHeading;
                 boids[i].numPerceivedFlockmates = boidData[i].numFlockmates;
-
+                
                 boids[i].UpdateBoid ();
+                boids[i].drawTarget = dragTarget;
             }
 
             boidBuffer.Release ();

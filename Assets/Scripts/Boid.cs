@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Boid : MonoBehaviour {
+public partial class Boid : MonoBehaviour {
 
     BoidSettings settings;
 
@@ -28,8 +28,6 @@ public class Boid : MonoBehaviour {
     Material material;
     Transform cachedTransform;
     public Transform target;
-
-    public Vector3 targetOffset;
     
     void Awake () {
         material = transform.GetComponentInChildren<MeshRenderer> ().material;
@@ -54,7 +52,7 @@ public class Boid : MonoBehaviour {
         }
     }
 
-    public void UpdateBoid () {
+    public void UpdateBoidLegacy () {
         Vector3 acceleration = Vector3.zero;
 
         if (target != null) {

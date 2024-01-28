@@ -5,11 +5,22 @@ using UnityEngine;
 public class ArmyGroup
 {
     public Vector3 center;
+    public Transform target;
+    public float speed = 1;
+    public Quaternion rotation;
+    public void Update()
+    {
+        var dir = target.position - center;
+        center += Time.deltaTime * dir.normalized * speed;
+        if(dir.magnitude > 0.1f)
+        rotation = Quaternion.LookRotation(dir, Vector3.up);
+    }
 }
 
 public class ArmyGroupManager
 {
-    public ArmyGroup group;
+    public static ArmyGroupManager Inst = new();
+    public List<ArmyGroup> groups = new();
 }
 
 public class Spawner : MonoBehaviour {
@@ -23,7 +34,7 @@ public class Spawner : MonoBehaviour {
     public GizmoType showSpawnRegion;
 
     public int row = 4;
-    public int column = 4;
+    public int column = 10;
 
     public float spacing = 1;
     
@@ -37,21 +48,31 @@ public class Spawner : MonoBehaviour {
 
             boid.SetColour (colour); 
         }
-*/
-        Vector3 center = Vector3.zero;
+        */
+        CreateArmyGroup(Vector3.zero);
+        CreateArmyGroup(Vector3.forward * 10);
+    }
+
+    void CreateArmyGroup(Vector3 center)
+    {
+        ArmyGroup armyGroup = new ArmyGroup();
         for (int i = -row/2; i < row/2; i++)
         {
             for (int j = -column/2; j < column/2; j++)
             {
-                Vector3 offset = new Vector3(spacing * i, 0, spacing * j);
-                Vector3 pos = transform.position + offset;
+                Vector3 offset = new Vector3(spacing * j, 0, spacing * i);
+                Vector3 pos = center + offset;
                 Boid boid = Instantiate (prefab);
                 boid.transform.position = pos;
                 boid.transform.forward = Vector3.forward;
                 boid.SetColour (colour);
                 boid.targetOffset = offset;
+                boid.armyGroup = armyGroup;
             }
         }
+
+        armyGroup.center = center;
+        ArmyGroupManager.Inst.groups.Add(armyGroup);
     }
 
     private void OnDrawGizmos () {
