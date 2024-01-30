@@ -78,11 +78,11 @@ public class BoidManager : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        // foreach (var group in ArmyGroupManager.Inst.groups)
-        // {
-        //     Gizmos.color = Color.red;
-        //     Gizmos.DrawSphere(group.center, 1);
-        // }
+        foreach (var group in ArmyGroupManager.Inst.groups)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(group.center, 0.5f);
+        }
     }
 
     public List<Boid> GetBoidsByArmyGroup(ArmyGroup armyGroup)

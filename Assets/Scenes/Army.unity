@@ -352,7 +352,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &152408955
 Transform:
   m_ObjectHideFlags: 0
@@ -709,7 +709,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &476120945
 Transform:
   m_ObjectHideFlags: 0
@@ -738,10 +738,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   row: 5
-  column: 1
+  column: 5
   spacing: 0.5
-  spawnCount: 1
-  spawnRadius: 3
+  spawnCount: 10
+  spawnRadius: 2
   color: 0
   formation: 2
   speed: 10
@@ -835,7 +835,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &548161616
 Transform:
   m_ObjectHideFlags: 0
@@ -869,7 +869,7 @@ MonoBehaviour:
   spawnCount: 10
   spawnRadius: 10
   color: 0
-  formation: 0
+  formation: 1
   speed: 2
 --- !u!65 &548161618
 BoxCollider:
@@ -1626,7 +1626,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &812154581
 Transform:
   m_ObjectHideFlags: 0
@@ -1923,8 +1923,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.96650964, z: -0.2566303, w: 0}
-  m_LocalPosition: {x: 0, y: 12.72, z: 20.22}
+  m_LocalRotation: {x: -0.4547661, y: 0.54131407, z: -0.45392245, w: -0.54232955}
+  m_LocalPosition: {x: 5.9764633, y: 36.992805, z: 0.9373305}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2497,7 +2497,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1731089536
 Transform:
   m_ObjectHideFlags: 0
@@ -2531,7 +2531,7 @@ MonoBehaviour:
   spawnCount: 20
   spawnRadius: 3
   color: 0
-  formation: 0
+  formation: 2
   speed: 10
 --- !u!65 &1731089538
 BoxCollider:
@@ -2997,7 +2997,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1995100634
 Transform:
   m_ObjectHideFlags: 0
@@ -3025,11 +3025,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76b7fb852654f8945a21bfa5667cc36c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  row: 1
-  column: 1
+  row: 5
+  column: 7
   spacing: 0.5
   spawnCount: 10
-  spawnRadius: 10
+  spawnRadius: 2
   color: 0
   formation: 1
   speed: 2

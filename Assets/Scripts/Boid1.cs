@@ -84,26 +84,30 @@ public class MoveToTargetState : BaseBoidState
 
 public class FollowArmyGroupState : BaseBoidState
 {
+    public override void Enter()
+    {
+        base.Enter();
+        Owner.maxSpeed = Owner.armyGroup.config.speed;
+    }
+
     public override void Update()
     {
         var armyGroup = Owner.armyGroup;
         var armyTargetPosition = armyGroup.center + armyGroup.rotation * Owner.targetOffset;
         Owner.UpdateToTarget(armyTargetPosition);
 
+        var distance = Vector3.Distance(Owner.transform.position, armyTargetPosition);
+
         if (Owner.armyGroup.State == EArmyGroupState.Attack)
         {
-            var distance = Vector3.Distance(Owner.transform.position, armyTargetPosition);
             if (distance < 0.2f)
             {
                 Owner.maxSpeed = 2;
                 Owner.ChangeState(new FindTargetState());
             }
-            else
-            {
-                Owner.maxSpeed = Mathf.Max(distance, 1);
-            }
         }
-        
+        else
+            Owner.maxSpeed = Owner.armyGroup.config.speed * distance;
     }
 }
 
@@ -186,6 +190,8 @@ public partial class Boid : MonoBehaviour {
     public float maxSpeed;
 
     public BaseBoidState state;
+
+    public string currentState;
     
     public void UpdateBoid ()
     {
@@ -218,7 +224,7 @@ public partial class Boid : MonoBehaviour {
         //     maxSpeed = 1f;
         // }
         
-        acceleration = SteerTowards (offsetToTarget) * settings.targetWeight * offsetToTarget.magnitude;
+        acceleration = SteerTowards (offsetToTarget) * settings.targetWeight;
         
         float minSpeed = this.maxSpeed * 0.5f;
 
@@ -331,8 +337,9 @@ public partial class Boid : MonoBehaviour {
     public void ChangeState(BaseBoidState state)
     {
         this.state = state;
-        state.Owner = this;
+        state.Owner = this; 
         state.Enter();
+        currentState = state.GetType().Name;
     }
 
     public bool CanBeAttack()
