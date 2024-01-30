@@ -20,7 +20,7 @@ MonoBehaviour:
   alignWeight: 1
   cohesionWeight: 1
   seperateWeight: 2.5
-  targetWeight: 20
+  targetWeight: 4
   obstacleMask:
     serializedVersion: 2
     m_Bits: 0

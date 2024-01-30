@@ -106,8 +106,15 @@ public class FollowArmyGroupState : BaseBoidState
                 Owner.ChangeState(new FindTargetState());
             }
         }
+
+        if (distance > 1)
+        {
+            Owner.maxSpeed = armyGroup.config.speed * 2;
+        }
         else
-            Owner.maxSpeed = Owner.armyGroup.config.speed * distance;
+        {
+            Owner.maxSpeed = armyGroup.config.speed;
+        }
     }
 }
 
@@ -119,6 +126,7 @@ public class ReturnFormationPositionState : BaseBoidState
     {
         base.Enter();
         _waitTime = Random.Range(4, 11);
+        Owner.maxSpeed = Owner.armyGroup.config.speed;
     }
 
     public override void Update()
@@ -134,7 +142,6 @@ public class ReturnFormationPositionState : BaseBoidState
             _waitTime -= Time.deltaTime;
             if (_waitTime < 0)
             {
-                Owner.maxSpeed = Owner.armyGroup.config.speed * 0.5f;
                 Owner.ChangeState(new FindTargetState());
             }
         }
@@ -223,8 +230,10 @@ public partial class Boid : MonoBehaviour {
         // {
         //     maxSpeed = 1f;
         // }
+
+        var addWeight = offsetToTarget.magnitude;
         
-        acceleration = SteerTowards (offsetToTarget) * settings.targetWeight;
+        acceleration = SteerTowards (offsetToTarget) * (settings.targetWeight + addWeight);
         
         float minSpeed = this.maxSpeed * 0.5f;
 

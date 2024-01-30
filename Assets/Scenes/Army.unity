@@ -743,8 +743,8 @@ MonoBehaviour:
   spawnCount: 10
   spawnRadius: 2
   color: 0
-  formation: 2
-  speed: 10
+  formation: 1
+  speed: 5
 --- !u!65 &476120947
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1924,7 +1924,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: -0.4547661, y: 0.54131407, z: -0.45392245, w: -0.54232955}
-  m_LocalPosition: {x: 5.9764633, y: 36.992805, z: 0.9373305}
+  m_LocalPosition: {x: 12.9662, y: 76.484436, z: 0.9239388}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2531,8 +2531,8 @@ MonoBehaviour:
   spawnCount: 20
   spawnRadius: 3
   color: 0
-  formation: 2
-  speed: 10
+  formation: 1
+  speed: 4
 --- !u!65 &1731089538
 BoxCollider:
   m_ObjectHideFlags: 0

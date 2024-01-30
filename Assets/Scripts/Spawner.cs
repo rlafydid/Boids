@@ -41,6 +41,8 @@ public class ArmyGroup
         get => targetArmyGroup.center;
     }
 
+    public float speed;
+
     public void Update()
     {
         if (State == EArmyGroupState.Attack)
@@ -68,7 +70,16 @@ public class ArmyGroup
         center += Time.deltaTime * dir.normalized * config.speed;
         if(dir.magnitude > 0.1f)
             rotation = Quaternion.LookRotation(dir, Vector3.up);
+    }
 
+    public void SlowSpeed()
+    {
+        speed = config.speed * 0.5f;
+    }
+
+    public void RevertSpeed()
+    {
+        speed = config.speed;
     }
     
 }
