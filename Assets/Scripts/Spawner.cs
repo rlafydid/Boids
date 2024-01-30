@@ -16,6 +16,13 @@ public enum EArmyGroupState
     Death
 }
 
+public enum EArmyFormation
+{
+    None,
+    Square,
+    Circular
+}
+
 public class ArmyGroup
 {
     public Vector3 center;
@@ -25,6 +32,8 @@ public class ArmyGroup
 
     public ArmyGroup targetArmyGroup;
 
+    public ArmyGroupConfig config;
+    
     public EArmyGroupState State { get; set; }
 
     public Vector3 TargetPosition
@@ -32,21 +41,31 @@ public class ArmyGroup
         get => targetArmyGroup.center;
     }
 
-    public void Update(float speed)
+    public void Update()
     {
+        if (State == EArmyGroupState.Attack)
+            return;
+        
         targetArmyGroup = ArmyGroupManager.Inst.GetNearestOpponentArmyGroup(this);
         if (targetArmyGroup == null)
             return;
         
         var dir = targetArmyGroup.center - center;
 
-        if (dir.magnitude < 1)
+        float minDistance = 0.2f;
+        if (this.config.formation == EArmyFormation.Circular)
+            minDistance += config.spawnRadius;
+        
+        if(targetArmyGroup.config.formation == EArmyFormation.Circular)
+            minDistance += targetArmyGroup.config.spawnRadius;
+        
+        if (dir.magnitude < minDistance)
         {
             this.State = EArmyGroupState.Attack;
             return;
         }
         
-        center += Time.deltaTime * dir.normalized * speed;
+        center += Time.deltaTime * dir.normalized * config.speed;
         if(dir.magnitude > 0.1f)
             rotation = Quaternion.LookRotation(dir, Vector3.up);
 
@@ -101,16 +120,7 @@ public class Spawner : MonoBehaviour {
     public Transform redGroups;
     
     void Awake () {
-        /*
-        for (int i = 0; i < spawnCount; i++) {
-            Vector3 pos = transform.position + Random.insideUnitSphere * spawnRadius;
-            Boid boid = Instantiate (prefab);
-            boid.transform.position = pos;
-            boid.transform.forward = Random.insideUnitSphere;
 
-            boid.SetColour (colour); 
-        }
-        */
         foreach (var group in blueGroups.GetComponentsInChildren<ArmyGroupConfig>())
         {
             group.color = EColor.Blue;
@@ -128,7 +138,28 @@ public class Spawner : MonoBehaviour {
     {
         ArmyGroup armyGroup = new ArmyGroup();
         armyGroup.color = config.color;
+        armyGroup.config = config;
+        
+        switch (config.formation)
+        {
+            case EArmyFormation.Square:
+                CreateSquareFormation(armyGroup, forward);
+                break;
+            case EArmyFormation.Circular:
+                CreateCircleFormation(armyGroup, forward);
+                break;
+            case EArmyFormation.None:
+                CreateSquareFormation(armyGroup, forward);
+                break;
+        }
 
+        armyGroup.center = config.transform.position;
+        ArmyGroupManager.Inst.groups.Add(armyGroup);
+    }
+
+    void CreateSquareFormation(ArmyGroup armyGroup, Vector3 forward)
+    {
+        var config = armyGroup.config;
         var offsetHorizontalCenter = config.spacing * config.column * 0.5f - config.spacing * 0.5f;
         Vector3 right = Vector3.Cross(Vector3.up, -Vector3.forward);
 
@@ -149,11 +180,36 @@ public class Spawner : MonoBehaviour {
                 boid.SetColour (colour);
                 boid.targetOffset = offset;
                 boid.armyGroup = armyGroup;
+                boid.maxSpeed = armyGroup.config.speed;
             }
         }
+    }
 
-        armyGroup.center = config.transform.position;
-        ArmyGroupManager.Inst.groups.Add(armyGroup);
+    void CreateNoneFormation(ArmyGroup armyGroup, Vector3 forward)
+    {
+        for (int i = 0; i < spawnCount; i++) {
+            Vector3 pos = transform.position + Random.insideUnitSphere * spawnRadius;
+            Boid boid = Instantiate (prefab);
+            boid.transform.position = pos;
+            boid.transform.forward = Random.insideUnitSphere;
+
+            boid.SetColour (colour); 
+        }
+    }
+    
+    void CreateCircleFormation(ArmyGroup armyGroup, Vector3 forward)
+    {
+        for (int i = 0; i < armyGroup.config.spawnCount; i++) {
+            var circle = Random.insideUnitCircle * armyGroup.config.spawnRadius;
+            Vector3 offset = new Vector3(circle.x, 0, circle.y);
+            Vector3 pos = armyGroup.config.transform.position + offset;
+            Boid boid = Instantiate (prefab);
+            boid.transform.position = pos;
+            boid.transform.forward = forward;
+            boid.armyGroup = armyGroup;
+            boid.maxSpeed = armyGroup.config.speed;
+            boid.targetOffset = offset;
+        }
     }
 
     private void OnDrawGizmos () {

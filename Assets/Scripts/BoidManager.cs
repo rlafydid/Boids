@@ -37,7 +37,7 @@ public class BoidManager : MonoBehaviour
     void Update () {
         foreach (var group in ArmyGroupManager.Inst.groups)
         {
-            group.Update(settings.maxSpeed);
+            group.Update();
         }
         if (boids != null) {
 
@@ -78,11 +78,11 @@ public class BoidManager : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        foreach (var group in ArmyGroupManager.Inst.groups)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(group.center, 1);
-        }
+        // foreach (var group in ArmyGroupManager.Inst.groups)
+        // {
+        //     Gizmos.color = Color.red;
+        //     Gizmos.DrawSphere(group.center, 1);
+        // }
     }
 
     public List<Boid> GetBoidsByArmyGroup(ArmyGroup armyGroup)
