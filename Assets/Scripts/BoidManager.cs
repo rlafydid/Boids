@@ -1,9 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class BoidManager : MonoBehaviour {
+public class BoidManager : MonoBehaviour
+{
 
+    public static BoidManager Instance;
+    
     const int threadGroupSize = 1024;
 
     public BoidSettings settings;
@@ -14,22 +19,25 @@ public class BoidManager : MonoBehaviour {
 
     public bool dragTarget;
     
-    void Start () {
+    
+    void Start ()
+    {
+        Instance = this;
         boids = FindObjectsOfType<Boid> ();
         foreach (Boid b in boids) {
             b.Initialize (settings, null);
         }
-        Queue<Transform> targetQueue = new(targets);
-        foreach (var group in ArmyGroupManager.Inst.groups)
-        {
-            group.target = targetQueue.Dequeue();
-        }
+        // Queue<Transform> targetQueue = new(targets);
+        // foreach (var group in ArmyGroupManager.Inst.groups)
+        // {
+        //     group.target = targetQueue.Dequeue();
+        // }
     }
 
     void Update () {
         foreach (var group in ArmyGroupManager.Inst.groups)
         {
-            group.Update();
+            group.Update(settings.maxSpeed);
         }
         if (boids != null) {
 
@@ -66,6 +74,20 @@ public class BoidManager : MonoBehaviour {
 
             boidBuffer.Release ();
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        foreach (var group in ArmyGroupManager.Inst.groups)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(group.center, 1);
+        }
+    }
+
+    public List<Boid> GetBoidsByArmyGroup(ArmyGroup armyGroup)
+    {
+        return boids.Where(d => d.armyGroup == armyGroup).ToList();
     }
 
     public struct BoidData {

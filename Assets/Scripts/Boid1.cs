@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum EVersion
@@ -20,8 +21,9 @@ public partial class Boid : MonoBehaviour {
     public bool drawTarget;
 
     public EVersion version;
-    
 
+    public int health = 100;
+    
     private Vector3 targetPosition;
     public void UpdateBoid ()
     {
@@ -103,24 +105,28 @@ public partial class Boid : MonoBehaviour {
     
     public void UpdateBoid2()
     {
+        if (armyGroup.State == EArmyGroupState.Attack)
+        {
+            var boids = BoidManager.Instance.GetBoidsByArmyGroup(this.armyGroup.targetArmyGroup);
+            boids.OrderBy((d) => Vector3.Distance(this.position, d.position));
+        }
+        
         var armyTargetPosition = armyGroup.center + armyGroup.rotation * targetOffset;
 
-        // target = armyGroup.target;
-        
         Vector3 acceleration = Vector3.zero;
 
-        // float maxSpeed = offsetToTarget.magnitude;
         float maxSpeed = settings.maxSpeed;
-            targetPosition = armyTargetPosition;
-            Vector3 offsetToTarget = (targetPosition - position);
-           
-            var centerToTarget = armyGroup.target.position - armyGroup.center;
-            if (Vector3.Dot(centerToTarget.normalized, offsetToTarget.normalized) < -0.9f)
-            {
-                maxSpeed = 1f;
-            }
-            
-            acceleration = SteerTowards (offsetToTarget) * settings.targetWeight * offsetToTarget.magnitude;
+        targetPosition = armyTargetPosition;
+        Vector3 offsetToTarget = (targetPosition - position);
+       
+        var centerToTarget = armyGroup.TargetPosition - armyGroup.center;
+        if (Vector3.Dot(centerToTarget.normalized, offsetToTarget.normalized) < -0.9f)
+        {
+            maxSpeed = 1f;
+        }
+        
+        acceleration = SteerTowards (offsetToTarget) * settings.targetWeight * offsetToTarget.magnitude;
+        
         float minSpeed = 0;
 
         if (numPerceivedFlockmates != 0) {
@@ -153,6 +159,11 @@ public partial class Boid : MonoBehaviour {
         cachedTransform.forward = dir;
         position = cachedTransform.position;
         forward = dir;
+
+        if (armyGroup.State == EArmyGroupState.Attack)
+        {
+            transform.forward = armyGroup.rotation * Vector3.forward;
+        }
     }
     
     

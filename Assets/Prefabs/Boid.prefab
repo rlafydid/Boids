@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6349151928875962174}
   - component: {fileID: 2931604500597588581}
+  - component: {fileID: 1712582402215123909}
   m_Layer: 8
   m_Name: Boid
   m_TagString: Untagged
@@ -24,6 +25,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4115476135907606149}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -6.19306, y: 5.817222, z: -10.448}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -31,7 +33,6 @@ Transform:
   m_Children:
   - {fileID: 8997596480846334841}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2931604500597588581
 MonoBehaviour:
@@ -55,12 +56,28 @@ MonoBehaviour:
   targetOffset: {x: 0, y: 0, z: 0}
   drawTarget: 0
   version: 2
+--- !u!111 &1712582402215123909
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4115476135907606149}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 3588fcfc806247549b49f6e611f864da, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 3588fcfc806247549b49f6e611f864da, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!1001 &4154384415608217699
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    serializedVersion: 2
+    serializedVersion: 3
     m_TransformParent: {fileID: 6349151928875962174}
     m_Modifications:
     - target: {fileID: -4216859302048453862, guid: 09cea7df0de2f4a8e9685c65efc5715d, type: 3}
@@ -132,7 +149,9 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 09cea7df0de2f4a8e9685c65efc5715d, type: 3}
 --- !u!4 &8997596480846334841 stripped
 Transform:

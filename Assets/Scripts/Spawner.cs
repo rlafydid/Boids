@@ -2,25 +2,88 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EColor
+{
+    Blue,
+    Red
+}
+
+public enum EArmyGroupState
+{
+    Idle,
+    Move,
+    Attack,
+    Death
+}
+
 public class ArmyGroup
 {
     public Vector3 center;
     public Transform target;
-    public float speed = 1;
     public Quaternion rotation;
-    public void Update()
+    public EColor color;
+
+    public ArmyGroup targetArmyGroup;
+
+    public EArmyGroupState State { get; set; }
+
+    public Vector3 TargetPosition
     {
-        var dir = target.position - center;
+        get => targetArmyGroup.center;
+    }
+
+    public void Update(float speed)
+    {
+        targetArmyGroup = ArmyGroupManager.Inst.GetNearestOpponentArmyGroup(this);
+        if (targetArmyGroup == null)
+            return;
+        
+        var dir = targetArmyGroup.center - center;
+
+        if (dir.magnitude < 1)
+        {
+            this.State = EArmyGroupState.Attack;
+            return;
+        }
+        
         center += Time.deltaTime * dir.normalized * speed;
         if(dir.magnitude > 0.1f)
-        rotation = Quaternion.LookRotation(dir, Vector3.up);
+            rotation = Quaternion.LookRotation(dir, Vector3.up);
+
     }
+    
 }
 
 public class ArmyGroupManager
 {
     public static ArmyGroupManager Inst = new();
     public List<ArmyGroup> groups = new();
+
+    public ArmyGroup GetNearestOpponentArmyGroup(ArmyGroup armyGroup)
+    {
+        float minDistance = float.MaxValue;
+        ArmyGroup nearestArmyGroup = null;
+        var opponent = armyGroup.color.GetOpponent();
+        foreach (var group in groups)
+        {
+            var distance = Vector3.Distance(group.center, armyGroup.center);
+            if (group.color == opponent && distance < minDistance)
+            {
+                minDistance = distance;
+                nearestArmyGroup = group;
+            }
+        }
+
+        return nearestArmyGroup;
+    }
+}
+
+public static class ArmyGroupExtension
+{
+    public static EColor GetOpponent(this EColor color)
+    {
+        return color == EColor.Blue ? EColor.Red : EColor.Blue;
+    }
 }
 
 public class Spawner : MonoBehaviour {
@@ -33,10 +96,9 @@ public class Spawner : MonoBehaviour {
     public Color colour;
     public GizmoType showSpawnRegion;
 
-    public int row = 4;
-    public int column = 10;
-
-    public float spacing = 1;
+  
+    public Transform blueGroups;
+    public Transform redGroups;
     
     void Awake () {
         /*
@@ -49,29 +111,48 @@ public class Spawner : MonoBehaviour {
             boid.SetColour (colour); 
         }
         */
-        CreateArmyGroup(Vector3.zero);
-        CreateArmyGroup(Vector3.forward * 10);
+        foreach (var group in blueGroups.GetComponentsInChildren<ArmyGroupConfig>())
+        {
+            group.color = EColor.Blue;
+            CreateArmyGroup(group, Vector3.forward);
+        }
+
+        foreach (var group in redGroups.GetComponentsInChildren<ArmyGroupConfig>())
+        {
+            group.color = EColor.Red;
+            CreateArmyGroup(group, Vector3.back);
+        }
     }
 
-    void CreateArmyGroup(Vector3 center)
+    void CreateArmyGroup(ArmyGroupConfig config, Vector3 forward)
     {
         ArmyGroup armyGroup = new ArmyGroup();
-        for (int i = -row/2; i < row/2; i++)
+        armyGroup.color = config.color;
+
+        var offsetHorizontalCenter = config.spacing * config.column * 0.5f - config.spacing * 0.5f;
+        Vector3 right = Vector3.Cross(Vector3.up, -Vector3.forward);
+
+        for (int i = 0; i < config.row; i++)
         {
-            for (int j = -column/2; j < column/2; j++)
+            for (int j = 0; j < config.column; j++)
             {
-                Vector3 offset = new Vector3(spacing * j, 0, spacing * i);
-                Vector3 pos = center + offset;
+                Vector3 offsetForward = -Vector3.forward * i;
+                Vector3 offsetRight = right * j - right * offsetHorizontalCenter;
+                
+                // Vector3 offset = new Vector3(config.spacing * j, 0, config.spacing * i);
+                Vector3 offset = offsetForward + offsetRight;
+                
+                Vector3 pos = config.transform.position + Quaternion.LookRotation(forward) * offset;
                 Boid boid = Instantiate (prefab);
                 boid.transform.position = pos;
-                boid.transform.forward = Vector3.forward;
+                boid.transform.rotation = Quaternion.LookRotation(forward);
                 boid.SetColour (colour);
                 boid.targetOffset = offset;
                 boid.armyGroup = armyGroup;
             }
         }
 
-        armyGroup.center = center;
+        armyGroup.center = config.transform.position;
         ArmyGroupManager.Inst.groups.Add(armyGroup);
     }
 
