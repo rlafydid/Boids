@@ -80,8 +80,12 @@ public class BoidManager : MonoBehaviour
     {
         foreach (var group in ArmyGroupManager.Inst.groups)
         {
-            Gizmos.color = Color.red;
+            Gizmos.color = group.color == EColor.Blue ? Color.blue : Color.red;
             Gizmos.DrawSphere(group.center, 0.5f);
+            Gizmos.DrawLine(group.center, group.center + (group.TargetPosition - group.center).normalized * 2);
+            
+            // Gizmos.color = Color.green;
+            // Gizmos.DrawSphere(group.targetArmyGroup.center - group.rotation * Vector3.forward * 1, 0.5f);
         }
     }
 

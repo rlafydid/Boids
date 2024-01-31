@@ -54,7 +54,7 @@ public class ArmyGroup
         
         var dir = targetArmyGroup.center - center;
 
-        float minDistance = 0.2f;
+        float minDistance = 0.5f;
         if (this.config.formation == EArmyFormation.Circular)
             minDistance += config.spawnRadius;
         
@@ -178,8 +178,8 @@ public class Spawner : MonoBehaviour {
         {
             for (int j = 0; j < config.column; j++)
             {
-                Vector3 offsetForward = -Vector3.forward * i;
-                Vector3 offsetRight = right * j - right * offsetHorizontalCenter;
+                Vector3 offsetForward = -Vector3.forward * i * config.spacing;
+                Vector3 offsetRight = right * j * config.spacing - right * offsetHorizontalCenter;
                 
                 // Vector3 offset = new Vector3(config.spacing * j, 0, config.spacing * i);
                 Vector3 offset = offsetForward + offsetRight;

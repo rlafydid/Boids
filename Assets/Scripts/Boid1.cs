@@ -54,7 +54,7 @@ public class AttackState : BaseBoidState
         //如果距离大于这个数，只是打一下就返回自己的位置
         if (Vector3.Distance(armyTargetPosition, target.transform.position) > 1)
         {
-            Owner.ChangeState(new ReturnFormationPositionState());
+            Owner.ChangeState(new FollowArmyGroupState());
         }
         else
         {
@@ -84,10 +84,13 @@ public class MoveToTargetState : BaseBoidState
 
 public class FollowArmyGroupState : BaseBoidState
 {
+    public bool _waiting = false;
+    public float _waitTime; 
     public override void Enter()
     {
         base.Enter();
         Owner.maxSpeed = Owner.armyGroup.config.speed;
+        _waitTime = Random.Range(5, 20);
     }
 
     public override void Update()
@@ -100,10 +103,17 @@ public class FollowArmyGroupState : BaseBoidState
 
         if (Owner.armyGroup.State == EArmyGroupState.Attack)
         {
-            if (distance < 0.2f)
+            if (_waiting)
             {
-                Owner.maxSpeed = 2;
-                Owner.ChangeState(new FindTargetState());
+                _waitTime -= Time.deltaTime;
+                if (_waitTime < 0)
+                {
+                    Owner.ChangeState(new FindTargetState());
+                }
+            }
+            else if (Vector3.Distance(Owner.transform.position, armyTargetPosition) < 0.5f)
+            {
+                _waiting = true;
             }
         }
 
@@ -115,6 +125,8 @@ public class FollowArmyGroupState : BaseBoidState
         {
             Owner.maxSpeed = armyGroup.config.speed;
         }
+        
+        
     }
 }
 
@@ -125,7 +137,7 @@ public class ReturnFormationPositionState : BaseBoidState
     public override void Enter()
     {
         base.Enter();
-        _waitTime = Random.Range(4, 11);
+        _waitTime = Random.Range(7, 15);
         Owner.maxSpeed = Owner.armyGroup.config.speed;
     }
 
