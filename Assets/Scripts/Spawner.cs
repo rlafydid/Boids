@@ -1,121 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public enum EColor
-{
-    Blue,
-    Red
-}
-
-public enum EArmyGroupState
-{
-    Idle,
-    Move,
-    Attack,
-    Death
-}
-
-public enum EArmyFormation
-{
-    None,
-    Square,
-    Circular
-}
-
-public class ArmyGroup
-{
-    public Vector3 center;
-    public Transform target;
-    public Quaternion rotation;
-    public EColor color;
-
-    public ArmyGroup targetArmyGroup;
-
-    public ArmyGroupConfig config;
-    
-    public EArmyGroupState State { get; set; }
-
-    public Vector3 TargetPosition
-    {
-        get => targetArmyGroup.center;
-    }
-
-    public float speed;
-
-    public void Update()
-    {
-        if (State == EArmyGroupState.Attack)
-            return;
-        
-        targetArmyGroup = ArmyGroupManager.Inst.GetNearestOpponentArmyGroup(this);
-        if (targetArmyGroup == null)
-            return;
-        
-        var dir = targetArmyGroup.center - center;
-
-        float minDistance = 0.5f;
-        if (this.config.formation == EArmyFormation.Circular)
-            minDistance += config.spawnRadius;
-        
-        if(targetArmyGroup.config.formation == EArmyFormation.Circular)
-            minDistance += targetArmyGroup.config.spawnRadius;
-        
-        if (dir.magnitude < minDistance)
-        {
-            this.State = EArmyGroupState.Attack;
-            return;
-        }
-        
-        center += Time.deltaTime * dir.normalized * config.speed;
-        if(dir.magnitude > 0.1f)
-            rotation = Quaternion.LookRotation(dir, Vector3.up);
-    }
-
-    public void SlowSpeed()
-    {
-        speed = config.speed * 0.5f;
-    }
-
-    public void RevertSpeed()
-    {
-        speed = config.speed;
-    }
-    
-}
-
-public class ArmyGroupManager
-{
-    public static ArmyGroupManager Inst = new();
-    public List<ArmyGroup> groups = new();
-
-    public ArmyGroup GetNearestOpponentArmyGroup(ArmyGroup armyGroup)
-    {
-        float minDistance = float.MaxValue;
-        ArmyGroup nearestArmyGroup = null;
-        var opponent = armyGroup.color.GetOpponent();
-        foreach (var group in groups)
-        {
-            var distance = Vector3.Distance(group.center, armyGroup.center);
-            if (group.color == opponent && distance < minDistance)
-            {
-                minDistance = distance;
-                nearestArmyGroup = group;
-            }
-        }
-
-        return nearestArmyGroup;
-    }
-}
-
-public static class ArmyGroupExtension
-{
-    public static EColor GetOpponent(this EColor color)
-    {
-        return color == EColor.Blue ? EColor.Red : EColor.Blue;
-    }
-}
-
 public class Spawner : MonoBehaviour {
 
     public enum GizmoType { Never, SelectedOnly, Always }
@@ -165,6 +50,7 @@ public class Spawner : MonoBehaviour {
         }
 
         armyGroup.center = config.transform.position;
+        armyGroup.Start();
         ArmyGroupManager.Inst.groups.Add(armyGroup);
     }
 
@@ -174,11 +60,13 @@ public class Spawner : MonoBehaviour {
         var offsetHorizontalCenter = config.spacing * config.column * 0.5f - config.spacing * 0.5f;
         Vector3 right = Vector3.Cross(Vector3.up, -Vector3.forward);
 
+        var offsetVerticalCenter = config.spacing * config.row * 0.5f - config.row * 0.5f;
+        
         for (int i = 0; i < config.row; i++)
         {
             for (int j = 0; j < config.column; j++)
             {
-                Vector3 offsetForward = -Vector3.forward * i * config.spacing;
+                Vector3 offsetForward = -Vector3.forward * i * config.spacing + -Vector3.forward * offsetVerticalCenter;
                 Vector3 offsetRight = right * j * config.spacing - right * offsetHorizontalCenter;
                 
                 // Vector3 offset = new Vector3(config.spacing * j, 0, config.spacing * i);

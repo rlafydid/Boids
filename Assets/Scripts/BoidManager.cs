@@ -78,6 +78,8 @@ public class BoidManager : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if (!Application.isPlaying)
+            return;
         foreach (var group in ArmyGroupManager.Inst.groups)
         {
             Gizmos.color = group.color == EColor.Blue ? Color.blue : Color.red;
