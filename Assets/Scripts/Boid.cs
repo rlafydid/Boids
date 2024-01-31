@@ -118,18 +118,4 @@ public partial class Boid : MonoBehaviour {
         Vector3 v = vector.normalized * settings.maxSpeed - velocity;
         return Vector3.ClampMagnitude (v, settings.maxSteerForce);
     }
-
-    void ChangeState(EBoidState state)
-    {
-        switch (state)
-        {
-            case EBoidState.Attack:
-                break;
-            case EBoidState.Idle:
-                break;
-            case EBoidState.MoveToTarget:
-                break;
-        }
-    }
-
 }
