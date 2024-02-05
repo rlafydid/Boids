@@ -740,10 +740,10 @@ MonoBehaviour:
   row: 5
   column: 20
   spacing: 0.5
-  spawnCount: 10
-  spawnRadius: 10
+  spawnCount: 15
+  spawnRadius: 2
   color: 0
-  formation: 1
+  formation: 2
   speed: 2
 --- !u!65 &476120947
 BoxCollider:

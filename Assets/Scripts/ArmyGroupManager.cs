@@ -30,6 +30,30 @@ public interface IFormationCollider
     bool Intersection(ArmyGroup formation);
 }
 
+public class Circle : IFormationCollider
+{
+    private ArmyGroup _armyGroup;
+    public float radius;
+    public Circle(ArmyGroup armyGroup)
+    {
+        this._armyGroup = armyGroup;
+        radius = armyGroup.config.spawnRadius;
+    }
+    public bool Intersection(ArmyGroup armyGroup)
+    {
+        switch (armyGroup.formationCollider)
+        {
+            case Rectangle rectangleFormation:
+                return Vector3.Distance(armyGroup.center, this._armyGroup.center) <
+                       radius + (rectangleFormation.width + rectangleFormation.height) / 2;
+            case Circle circleFormation:
+                return Vector3.Distance(armyGroup.center, this._armyGroup.center) < circleFormation.radius + radius;
+        }
+
+        return false;
+    }
+}
+
 public class Rectangle : IFormationCollider
 {
     public List<Vector3> points = new();
@@ -74,6 +98,8 @@ public class Rectangle : IFormationCollider
                         return true;
                 }
                 break;
+            case Circle circle:
+                return circle.Intersection(_armyGroup);
         }
         return false;
     }
@@ -123,6 +149,9 @@ public class ArmyGroup
         {
             case EArmyFormation.Square:
                 formationCollider = new Rectangle(this);
+                break;
+            case EArmyFormation.Circular:
+                formationCollider = new Circle(this);
                 break;
         }
     }
